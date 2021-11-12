@@ -1,0 +1,24 @@
+{
+    "name": "com.ncsurobotcodelab.unityrosutils",
+    "version": "0.1.0",
+    "displayName": "UnityRosUtils",
+    "description": "Common tools for Unity-ROS simulation integration",
+    "unity": "2021.1",
+    "unityRelease": "25f1",
+    "documentationUrl": "https://robotcodelab.com",
+    "changelogUrl": "https://robotcodelab.com",
+    "licensesUrl": "https://robotcodelab.com",
+    "dependencies": {
+      "com.unity.robotics.ros-tcp-connector": "0.5.0-preview"
+   },
+   "keywords": [
+      "robotics",
+      "ROS",
+      "simulation"
+    ],
+    "author": {
+      "name": "Amr Khalil Moussa",
+      "email": "amrmoussa100@gmail.com",
+      "url": "https://github.com/Namr"
+    }
+  }
