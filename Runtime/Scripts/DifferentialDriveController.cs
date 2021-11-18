@@ -16,7 +16,6 @@ public class DifferentialDriveController : MonoBehaviour
     public GameObject rearLeftWheelObject;
 
     private ROSConnection ros;
-    private TFSystem odomStream;
 
     private ArticulationBody frontRightWheel;
     private ArticulationBody rearRightWheel;
@@ -36,9 +35,6 @@ public class DifferentialDriveController : MonoBehaviour
         //listen for cmd_vel
         ros = ROSConnection.GetOrCreateInstance();
         ros.Subscribe<TwistMsg>("/jackal_velocity_controller/cmd_vel", cmdVelCallback);
-        //odomStream = new TFStream(null, "odom", "/odom");
-        TFSystem system = TFSystem.GetOrCreateInstance();
-        //system.GetTransformStream("odom").Add((long) Time.time, new Vector3(1.0f, 1.0f, 1.0f), Quaternion.identity);
 
         //get and store joints for each wheel
         if(frontRightWheelObject == null || frontLeftWheelObject == null)
