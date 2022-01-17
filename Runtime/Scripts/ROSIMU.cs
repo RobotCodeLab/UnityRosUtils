@@ -37,7 +37,7 @@ public class ROSIMU : MonoBehaviour
     void FixedUpdate()
     {
         if(lastRotation != null)
-            angularVelocity = this.transform.rotation * Quaternion.Inverse(lastRotation);
+            angularVelocity = Quaternion.Inverse(lastRotation) * this.transform.rotation;
         lastRotation = this.transform.rotation;
         if(lastPosition != null)
             velocity = (this.transform.position - lastPosition) / Time.fixedDeltaTime;
@@ -47,21 +47,23 @@ public class ROSIMU : MonoBehaviour
         lastVelocity = velocity;
 
         ImuMsg message = new ImuMsg();
-
+        
         message.header.frame_id = frame_id;
         message.header.stamp = clock.getTimeStamp();
-        message.orientation.w = this.gameObject.transform.rotation.w;
-        message.orientation.x = this.gameObject.transform.rotation.x;
-        message.orientation.y = this.gameObject.transform.rotation.y;
-        message.orientation.z = this.gameObject.transform.rotation.z;
 
-        message.angular_velocity.x = angularVelocity.eulerAngles.x / Time.fixedDeltaTime;
-        message.angular_velocity.y = angularVelocity.eulerAngles.y / Time.fixedDeltaTime;
-        message.angular_velocity.z = angularVelocity.eulerAngles.z / Time.fixedDeltaTime;
+        message.orientation.w = -this.gameObject.transform.rotation.w;
+        message.orientation.x = this.gameObject.transform.rotation.z;
+        message.orientation.y = -this.gameObject.transform.rotation.x;
+        message.orientation.z = this.gameObject.transform.rotation.y;
 
-        message.linear_acceleration.x = acceleration.x;
-        message.linear_acceleration.y = acceleration.y;
-        message.linear_acceleration.z = acceleration.z;
+        
+        message.angular_velocity.x = angularVelocity.eulerAngles.z / Time.fixedDeltaTime;
+        message.angular_velocity.y = -angularVelocity.eulerAngles.x / Time.fixedDeltaTime;
+        message.angular_velocity.z = angularVelocity.eulerAngles.y / Time.fixedDeltaTime;
+
+        message.linear_acceleration.x = acceleration.z;
+        message.linear_acceleration.y = -acceleration.x;
+        message.linear_acceleration.z = acceleration.y;
 
         ros.Publish(topicName, message);
     }
