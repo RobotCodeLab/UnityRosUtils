@@ -55,16 +55,27 @@ public class ROSIMU : MonoBehaviour
         message.orientation.x = this.gameObject.transform.rotation.z;
         message.orientation.y = -this.gameObject.transform.rotation.x;
         message.orientation.z = this.gameObject.transform.rotation.y;
-
         
-        message.angular_velocity.x = angularVelocity.eulerAngles.z / Time.fixedDeltaTime;
-        message.angular_velocity.y = -angularVelocity.eulerAngles.x / Time.fixedDeltaTime;
-        message.angular_velocity.z = angularVelocity.eulerAngles.y / Time.fixedDeltaTime;
+        message.angular_velocity.x = 0;//angularVelocity.eulerAngles.z;
+        message.angular_velocity.y = 0;//-angularVelocity.eulerAngles.x;
+        message.angular_velocity.z = angularVelocity.eulerAngles.y;
 
         message.linear_acceleration.x = acceleration.z;
         message.linear_acceleration.y = -acceleration.x;
         message.linear_acceleration.z = acceleration.y;
 
+        message.angular_velocity_covariance[0] = 0.00001f; 
+        message.angular_velocity_covariance[4] = 0.00001f; 
+        message.angular_velocity_covariance[8] = 0.00001f; 
+        
+        message.orientation_covariance[0] = 0.00001f; 
+        message.orientation_covariance[4] = 0.00001f; 
+        message.orientation_covariance[8] = 0.00001f; 
+
+        message.linear_acceleration_covariance[0] = 0.00001f; 
+        message.linear_acceleration_covariance[4] = 0.00001f; 
+        message.linear_acceleration_covariance[8] = 0.00001f; 
+        
         ros.Publish(topicName, message);
     }
 }

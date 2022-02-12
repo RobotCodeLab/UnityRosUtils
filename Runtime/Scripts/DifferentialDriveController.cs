@@ -74,11 +74,11 @@ public class DifferentialDriveController : MonoBehaviour
     void cmdVelCallback(TwistMsg cmdVel)
     {
         forwardRate = (float)cmdVel.linear.x;
-        rotationRate = (float)cmdVel.angular.z;
+        rotationRate = (float)-cmdVel.angular.z;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         float phiL = ((wheelSeparation * rotationRate) + forwardRate) / (2 * wheelRadius);
         float phiR = ((-wheelSeparation * rotationRate) + forwardRate) / (2 * wheelRadius);
@@ -109,11 +109,11 @@ public class DifferentialDriveController : MonoBehaviour
             lastPosition = offset;
 
             poseEncoderX = offset.z;
-            poseEncoderY = offset.x;
+            poseEncoderY = -offset.x;
             poseEncoderTheta = chasis.transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
 
             dx = delta.z;
-            dy = delta.x;
+            dy = -delta.x;
             dTheta = chasis.transform.rotation.eulerAngles.y - lastRot;
             dTheta *= Mathf.Deg2Rad;
             lastRot = chasis.transform.rotation.eulerAngles.y;
@@ -139,7 +139,7 @@ public class DifferentialDriveController : MonoBehaviour
             poseEncoderY += dy * Time.deltaTime;
         }
 
-        Quaternion qt = Quaternion.Euler(0, 0, Mathf.Rad2Deg * poseEncoderTheta);
+        Quaternion qt = Quaternion.Euler(0, Mathf.Rad2Deg * poseEncoderTheta, 0);
 
         OdometryMsg odom = new OdometryMsg();
         odom.header.frame_id = "odom";
@@ -155,9 +155,10 @@ public class DifferentialDriveController : MonoBehaviour
         pose.pose.orientation.z = qt.y;
         pose.pose.orientation.w = -qt.w;
 
-        twist.twist.angular.z = dTheta / Time.deltaTime;
-        twist.twist.linear.x = dx / Time.deltaTime;
-        twist.twist.linear.y = dy / Time.deltaTime;
+        twist.twist.angular.z = dTheta / Time.fixedDeltaTime;
+        twist.twist.linear.x = ((Mathf.Cos(poseEncoderTheta) * dx) - (Mathf.Sin(poseEncoderTheta) * dy)) / Time.fixedDeltaTime;
+        //twist.twist.angular.z = rotationRate;
+        //twist.twist.linear.x = forwardRate;
 
         // set covariance
         pose.covariance[0] = 0.00001;
@@ -169,6 +170,7 @@ public class DifferentialDriveController : MonoBehaviour
 
         odom.pose = pose;
         odom.twist = twist;
+
         ros.Publish("/jackal_velocity_controller/odom", odom);
     }
 }
